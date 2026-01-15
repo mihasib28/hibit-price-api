@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ATC Live Price</title>
+  <style>
+    body {
+      background: #0b0f1a;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #11162a;
+      padding: 30px 40px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 150, 255, 0.2);
+    }
+
+    .title {
+      font-size: 18px;
+      opacity: 0.7;
+    }
+
+    .price {
+      font-size: 36px;
+      margin-top: 10px;
+      transition: color 0.3s ease;
+    }
+
+    .updated {
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="title">ATC / USDT</div>
+    <div class="price" id="price">Loading...</div>
+    <div class="updated" id="time"></div>
+  </div>
+
+  <script>
+    let lastPrice = null;
+
+    async function loadPrice() {
+      try {
+        const res = await fetch("http://localhost:3000/api/atc-price");
+        const data = await res.json();
+
+        const priceEl = document.getElementById("price");
+        const timeEl = document.getElementById("time");
+
+        const price = parseFloat(data.price).toFixed(2);
+
+        if (lastPrice && price !== lastPrice) {
+          priceEl.style.color =
+            price > lastPrice ? "#4caf50" : "#f44336";
+        }
+
+        priceEl.innerText = `$${price}`;
+        const now = new Date();
+
+        lastPrice = price;
+      } catch {
+        document.getElementById("price").innerText = "Error";
+      }
+    }
+
+    loadPrice();
+    setInterval(loadPrice, 5000);
+  </script>
+
+</body>
+</html>
